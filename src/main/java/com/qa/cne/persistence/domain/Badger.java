@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class Badger {
@@ -17,6 +18,32 @@ public class Badger {
 	private int age;
 
 	private String habitat;
+
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
+//		Badger other = (Badger) obj;
+//		if (age != other.age)
+//			return false;
+//		if (name == null) {
+//			if (other.name != null)
+//				return false;
+//			if (habitat == null) {
+//				return other.habitat == null;
+//			}
+//		}
+//		return true;
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(name, age, habitat);
+//	}
 
 	public Badger(Long id, String name, int age, String habitat) {
 		super();
