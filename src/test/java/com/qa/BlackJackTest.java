@@ -19,12 +19,12 @@ public class BlackJackTest {
 
     @Test
     public void testP1GoesBust() {
-        assertEquals("Player 1 has gone bust, Player 2 wins", 24, BlackJack.play(24 , 16));
+        assertEquals("Player 1 has gone bust, Player 2 wins", 16, BlackJack.play(24 , 16));
     }
 
     @Test
     public void testP2GoesBust() {
-        assertEquals("Player 2 has gone bust, Player 1 wins", 24, BlackJack.play(16, 24));
+        assertEquals("Player 2 has gone bust, Player 1 wins", 16, BlackJack.play(16, 24));
     }
 
     @Test
