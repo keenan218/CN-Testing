@@ -1,0 +1,8 @@
+DROP TABLE `badger`;
+
+CREATE TABLE badger (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    age INTEGER NOT NULL,
+    habitat VARCHAR(255)
+);
