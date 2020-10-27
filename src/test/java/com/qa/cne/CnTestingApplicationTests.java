@@ -8,10 +8,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -19,7 +23,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ActiveProfiles(profiles = "test")
+//@ActiveProfiles(profiles = "test")
+@Sql(scripts = {"classpath:badger-schema.sql",
+				"classpath:badger-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
 class CnTestingApplicationTests {
 
@@ -42,7 +48,7 @@ class CnTestingApplicationTests {
 		ResultMatcher checkStatus = status().is(201);
 
 		Badger savedBadger = new Badger("fred", 21, "trees");
-		savedBadger.setId(1L); // value as 2 because ID 1 should have been inserted with data.sql
+		savedBadger.setId(2L); // value as 2 because ID 1 should have been inserted with data.sql
 
 		String expectedAsJSON = this.mapper.writeValueAsString(savedBadger);
 		ResultMatcher checkJSON = content().json(expectedAsJSON);
@@ -59,19 +65,19 @@ class CnTestingApplicationTests {
 
 	@Test
 	void updateBadger() throws Exception {
-	Badger newBadger = new Badger("jeremy", 21, "trees");
-	String testBadgerAsJSON = this.mapper.writeValueAsString(newBadger);
-	RequestBuilder request = put("/update/1").contentType(MediaType.APPLICATION_JSON).content(testBadgerAsJSON);
+		Badger newBadger = new Badger("jeremy", 21, "trees");
+		String testBadgerAsJSON = this.mapper.writeValueAsString(newBadger);
+		RequestBuilder request = put("/update/1").contentType(MediaType.APPLICATION_JSON).content(testBadgerAsJSON);
 
-	ResultMatcher checkStatus = status().is(200);
+		ResultMatcher checkStatus = status().is(202);
 
-	Badger savedBadger = new Badger("jeremy", 21, "trees");
-	savedBadger.setId(1L); // id = 1 because we're updating the value inserted using data.sql
+		Badger savedBadger = new Badger("jeremy", 21, "trees");
+		savedBadger.setId(1L); // id = 1 because we're updating the value inserted using data.sql
 
-	String expectedAsJSON = this.mapper.writeValueAsString(savedBadger);
-	ResultMatcher checkJSON = content().json(expectedAsJSON);
+		String expectedAsJSON = this.mapper.writeValueAsString(savedBadger);
+		ResultMatcher checkJSON = content().json(expectedAsJSON);
 
-	this.mockMVC.perform(request).andExpect(checkStatus).andExpect(checkJSON);
+		this.mockMVC.perform(request).andExpect(checkStatus).andExpect(checkJSON);
 	}
 
 	@Test
@@ -79,4 +85,14 @@ class CnTestingApplicationTests {
 		this.mockMVC.perform(delete("/remove/1")).andExpect(status().isOk());
 	}
 
+	@Test
+	void getBadger() throws Exception{
+		Badger badger = new Badger("fred", 21, "trees");
+		badger.setId(1L);
+		List<Badger> badgers = new ArrayList<>();
+		badgers.add(badger);
+		String responseBody = this.mapper.writeValueAsString(badgers);
+
+		this.mockMVC.perform(get("/get")).andExpect(status().isOk()).andExpect(content().json(responseBody));
+	}
 }
